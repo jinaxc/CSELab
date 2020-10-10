@@ -349,7 +349,10 @@ public class Application {
             errorOutput("file not exist");
         } else {
             try {
-                file.read((int) length);
+                byte[] bytes = file.read((int) length);
+                if(bytes.length < length){
+                    System.out.println("not enough bytes left");
+                }
             } catch (IOException e) {
                 errorOutput("read failed -> " + e.getMessage());
                 printCommandExample("read");

@@ -26,8 +26,8 @@ public class UserUtils {
             byte[] bytes = file.read(Properties.BLOCK_SIZE);
             System.out.print(new String(bytes));
             if(bytes.length == 0){
-                System.out.println();
-                System.out.println("not enough bytes left");
+//                System.out.println();
+//                System.out.println("not enough bytes left");
                 return;
             }
             left -= bytes.length;
