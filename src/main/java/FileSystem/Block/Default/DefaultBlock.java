@@ -47,7 +47,7 @@ public class DefaultBlock implements Block {
             throw e;
         }
         try {
-            Application.bufferManager.putBuffer(new BlockIndexIdWithManagerId(blockManager.getId().getIdString() + "-" + id.getIdString()),data);
+            Application.getApplication().bufferManager.putBuffer(new BlockIndexIdWithManagerId(blockManager.getId().getIdString() + "-" + id.getIdString()),data);
         } catch (BlockIndexIdWithManagerIdFormatException e) {
             //impossible catch
         }

@@ -37,16 +37,31 @@ import java.util.stream.Collectors;
  */
 public class Application {
     private final static Logger LOGGER = LogManager.getLogger(Application.class);
-    public static BlockManagerController blockManagerController;
-    public static FileManagerController fileManagerController;
-    public static BlockBufferManager bufferManager;
-    private static Map<String,String> commandFormatHelpers;
+    private static Application application;
+    public BlockManagerController blockManagerController;
+    public FileManagerController fileManagerController;
+    public BlockBufferManager bufferManager;
+    private Map<String,String> commandFormatHelpers;
 
+    private Application(){
+    }
 
-    private static void initialize() throws InitiationFailedException {
-        System.out.println("please make sure that there aren't directories named Block and FileMetaData in this directory(directories made by this app is OK)");
+    public static synchronized void startApplication() throws InitiationFailedException {
+        if(application == null) {
+            application = new Application();
+            application.initialize();
+        }
+    }
+
+    public static synchronized Application getApplication(){
+        return application;
+    }
+
+    private void initialize() throws InitiationFailedException {
+//        returnValue += "please make sure that there aren't directories named Block and FileMetaData in this directory(directories made by this app is OK)";
         initializeBlockController();
         initializeFileController();
+
         bufferManager = new BlockBufferManager(10);
         commandFormatHelpers = new HashMap<>();
         commandFormatHelpers.put("newFile","new-file||newFile file_id");
@@ -63,7 +78,7 @@ public class Application {
         commandFormatHelpers.put("smartCopy","smart-copy||smartCopy file_id_from file_id_to");
     }
 
-    private static void initializeFileController() throws InitiationFailedException {
+    private void initializeFileController() throws InitiationFailedException {
         try {
             java.io.File fileDir = new java.io.File(Properties.FILE_PATH);
             java.io.File[] fmDirs = fileDir.listFiles();
@@ -105,7 +120,7 @@ public class Application {
         }
     }
 
-    private static void initializeBlockController() throws InitiationFailedException {
+    private void initializeBlockController() throws InitiationFailedException {
         try {
             java.io.File blockDir = new java.io.File(Properties.BLOCK_PATH);
             java.io.File[] bmDirs = blockDir.listFiles();
@@ -157,14 +172,474 @@ public class Application {
         }
     }
 
+//    /**
+//     * the fileForm must exists, fileTo may be created
+//     * @param commandAndArgs the args
+//     */
+//    private static void smartCopy(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 3) {
+//            printCommandExample("smartCopy");
+//            defaultOutput();
+//        } else {
+//            String fileId1 = commandAndArgs[1];
+//            File fileFrom;
+//            String fileId2 = commandAndArgs[2];
+//            File fileTo;
+//            try{
+//                fileFrom = fileManagerController.getFile(new FileIdWithManagerId(fileId1));
+//                fileTo = fileManagerController.getFile(new FileIdWithManagerId(fileId2));
+//                if(fileTo == null){
+//                    FileIdWithManagerId fileToId = new FileIdWithManagerId(fileId2);
+//                    fileTo = fileManagerController.newFile(fileToId.getFileId(),fileToId.getFileManagerId());
+//                }
+//            }catch (FileIdWithManagerIdFormatException e){
+//                errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//                printCommandExample("smartCopy");
+//                return;
+//            }
+//            if (fileFrom == null) {
+//                errorOutput("file not exist");
+//            } else {
+//                try {
+//                    UserUtils.smartCopy(fileFrom, fileTo);
+//                } catch (IOException e) {
+//                    errorOutput("IO failed -> " + e.getMessage());
+//                    printCommandExample("smartCopy");
+//                } catch (CorruptedFileException e) {
+//                    errorOutput("file corrupted -> " + e.getMessage());
+//                    printCommandExample("smartCopy");
+//                } catch (AllocateNewBlockFailedException e) {
+//                    errorOutput("block allocate failed -> " + e.getMessage());
+//                    printCommandExample("smartCopy");
+//                }
+//            }
+//        }
+//    }
+//
+//    private static void smartWrite(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 4) {
+//            printCommandExample("smartWrite");
+//            defaultOutput();
+//        } else {
+//            String indexStr = commandAndArgs[2];
+//            int index;
+//            String fileId = commandAndArgs[1];
+//            File file;
+//            try {
+//                index = Integer.parseInt(indexStr);
+//                file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            } catch (NumberFormatException e) {
+//                errorOutput("index not valid -> " + e.getMessage());
+//                printCommandExample("smartWrite");
+//                return;
+//            }catch (FileIdWithManagerIdFormatException e){
+//                errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//                printCommandExample("smartWrite");
+//                return;
+//            }
+//            if (file == null) {
+//                errorOutput("file not exist");
+//            } else {
+//                try {
+//                    UserUtils.smartWrite(file, index, commandAndArgs[3]);
+//                } catch (IllegalCursorException e) {
+//                    errorOutput("illegal cursor place -> " + e.getMessage());
+//                } catch (AllocateNewBlockFailedException e) {
+//                    errorOutput("block allocate failed -> " + e.getMessage());
+//                } catch (IOException e) {
+//                    errorOutput("IO failed -> " + e.getMessage());
+//                } catch (CorruptedFileException e) {
+//                    errorOutput("file corrupted -> " + e.getMessage());
+//                }finally {
+//                    printCommandExample("smartWrite");
+//                }
+//            }
+//        }
+//    }
+//
+//    private static void smartHex(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("smartHex");
+//            defaultOutput();
+//        } else {
+//            String blockId = commandAndArgs[1];
+//            Block block;
+//            try{
+//                block = blockManagerController.getBlock(new BlockIndexIdWithManagerId(blockId));
+//            }catch (BlockIndexIdWithManagerIdFormatException e){
+//                errorOutput("invalid blockIdFormat -> " + e.getMessage());
+//                printCommandExample("smartHex");
+//                return;
+//            }
+//            if (block == null) {
+//                errorOutput("block not exist");
+//            } else {
+//                try {
+//                    UserUtils.smartHex(block);
+//                } catch (IOException e) {
+//                    printCommandExample("smartHex");
+//                    errorOutput("read failed -> " + e.getMessage());
+//                }
+//            }
+//        }
+//    }
+//
+//    private static void smartCat(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("smartCat");
+//            defaultOutput();
+//        } else {
+//            String fileId = commandAndArgs[1];
+//            File file;
+//            try{
+//                file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            }catch (FileIdWithManagerIdFormatException e){
+//                errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//                printCommandExample("smartCat");
+//                return;
+//            }
+//            if (file == null) {
+//                errorOutput("file not exist");
+//            } else {
+//                try {
+//                    UserUtils.smartCat(file);
+//                } catch (IOException e) {
+//                    errorOutput("read failed -> " + e.getMessage());
+//                    printCommandExample("smartCat");
+//                } catch (CorruptedFileException e) {
+//                    errorOutput("file corrupted -> " + e.getMessage());
+//                    printCommandExample("smartCat");
+//                }
+//            }
+//        }
+//    }
+//
+//    private static void newFile(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("newFile");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        int id;
+//        try{
+//            id = Integer.parseInt(fileId);
+//        }catch (NumberFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("newFile");
+//            return;
+//        }
+//        File file = fileManagerController.newFile(new FileId(id));
+//        if(file == null){
+//            errorOutput("create file fail");
+//            printCommandExample("newFile");
+//        }else{
+//            System.out.println(file.getFileManager().getId().getIdString() + "-" + file.getFileId().getIdString());
+//        }
+//    }
+//
+//    private static void read(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 3) {
+//            printCommandExample("read");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        String lengthStr = commandAndArgs[2];
+//        long length;
+//        File file;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            length = Long.parseLong(lengthStr);
+//        }catch (NumberFormatException e){
+//            errorOutput("invalid length -> " + e.getMessage());
+//            printCommandExample("read");
+//            return;
+//        } catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("read");
+//            return;
+//        }
+//        if (file == null) {
+//            errorOutput("file not exist");
+//        } else {
+//            try {
+//                file.read((int) length);
+//            } catch (IOException e) {
+//                errorOutput("read failed -> " + e.getMessage());
+//                printCommandExample("read");
+//            } catch (CorruptedFileException e) {
+//                errorOutput("file corrupted -> " + e.getMessage());
+//                printCommandExample("read");
+//            }
+//        }
+//    }
+//
+//    private static void write(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 3) {
+//            printCommandExample("write");
+//            defaultOutput();
+//            return;
+//        }
+//
+//        String fileId = commandAndArgs[1];
+//        File file;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("write");
+//            return;
+//        }
+//        if (file == null) {
+//            errorOutput("file not exist");
+//        } else {
+//            StringBuilder toWrite = new StringBuilder();
+//            for(int i = 2;i < commandAndArgs.length;i++){
+//                toWrite.append(commandAndArgs[i]);
+//            }
+//            try {
+//                file.write(toWrite.toString().getBytes());
+//            } catch (IOException e) {
+//                errorOutput("read failed -> " + e.getMessage());
+//                printCommandExample("write");
+//            } catch (CorruptedFileException e) {
+//                errorOutput("file corrupted -> " + e.getMessage());
+//                printCommandExample("write");
+//            } catch (AllocateNewBlockFailedException e) {
+//                errorOutput("fail -> " + e.getMessage());
+//                printCommandExample("write");
+//            }
+//
+//        }
+//    }
+//
+//    private static void pos(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("pos");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        File file;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            System.out.println(file.pos());
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("pos");
+//        }
+//    }
+//
+//
+//    private static void move(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 4) {
+//            printCommandExample("move");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        File file;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("move");
+//            return;
+//        }
+//        int index;
+//        int cursor;
+//        try{
+//            index = Integer.parseInt(commandAndArgs[2]);
+//            cursor = Integer.parseInt(commandAndArgs[3]);
+//            file.move(index,cursor);
+//        }catch (NumberFormatException e){
+//            errorOutput("invalid positionFormat -> " + e.getMessage());
+//            printCommandExample("move");
+//        } catch (IllegalCursorException e) {
+//            errorOutput("illegal position -> " + e.getMessage());
+//            printCommandExample("move");
+//        }
+//    }
+//
+//    private static void size(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("size");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        File file;
+//        long size;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            size = file.size();
+//            System.out.println(size);
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("size");
+//        } catch (CorruptedFileException e) {
+//            errorOutput("file corrupted -> " + e.getMessage());
+//            printCommandExample("size");
+//        } catch (IOException e) {
+//            errorOutput("read failed -> " + e.getMessage());
+//            printCommandExample("size");
+//        }
+//    }
+//
+//    private static void close(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 2) {
+//            printCommandExample("close");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        File file;
+//        try{
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//            file.close();
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("close");
+//        }
+//    }
+//
+//    private static void setSize(String[] commandAndArgs) {
+//        if (commandAndArgs.length < 3) {
+//            printCommandExample("setSize");
+//            defaultOutput();
+//            return;
+//        }
+//        String fileId = commandAndArgs[1];
+//        String lengthStr = commandAndArgs[2];
+//        long length;
+//        File file;
+//        try{
+//            length = Long.parseLong(lengthStr);
+//            file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
+//        }catch (FileIdWithManagerIdFormatException e){
+//            errorOutput("invalid fileIdFormat -> " + e.getMessage());
+//            printCommandExample("setSize");
+//            return;
+//        }catch (NumberFormatException e){
+//            errorOutput("invalid length -> " + e.getMessage());
+//            printCommandExample("setSize");
+//            return;
+//        }
+//        if (file == null) {
+//            errorOutput("file not exist");
+//        } else {
+//            try {
+//                file.setSize(length);
+//            } catch (IOException e) {
+//                errorOutput("read failed -> " + e.getMessage());
+//                printCommandExample("setSize");
+//            } catch (CorruptedFileException e) {
+//                errorOutput("file corrupted -> " + e.getMessage());
+//                printCommandExample("setSize");
+//            } catch (AllocateNewBlockFailedException e) {
+//                errorOutput("fail -> " + e.getMessage());
+//                printCommandExample("setSize");
+//            }
+//        }
+//    }
+//
+//    private static void printCommandExample(String commandName){
+//        System.out.println(commandName + " : " + commandFormatHelpers.get(commandName));
+//    }
+//
+//
+//    private static void printHelp(){
+//        System.out.println("commands : ");
+//        System.out.println("\t new-file : create new file with the given name(name must be a number)");
+//        System.out.println("\t read : read data from a file with given length");
+//        System.out.println("\t write : write data to a file");
+//        System.out.println("\t pos : show the cursor of a file");
+//        System.out.println("\t move : move the cursor of a file");
+//        System.out.println("\t size : get the size of a file");
+//        System.out.println("\t close : close a file");
+//        System.out.println("\t set-size : set the size of a file(extra bytes would be 0x00)");
+//        System.out.println("\t smart-cat : read all the data start from the cursor");
+//        System.out.println("\t smart-write : write to a specific place of a file");
+//        System.out.println("\t smart-hex : read the data of a block in the form of hex numbers");
+//        System.out.println("\t smart-copy : copy the data of a file to another file(depend on their current cursor)");
+//
+//    }
+//
+//    private static void defaultOutput(){
+//        System.out.println("invalid command, use -help for help");
+//    }
+//
+//    private static void errorOutput(String info){
+//        System.out.println(info + ", use -help for help");
+//    }
+//
+//    private static void shutUpGracefully(Reader reader){
+//        try {
+//            reader.close();
+//        } catch (IOException e) {
+//            LOGGER.warn("close standard input reader failed");
+//        }
+//    }
+//
+//    public static void main(String[] args){
+//        try {
+//            initialize();
+//        } catch (InitiationFailedException e) {
+//            System.out.println("system initialize failed");
+//            return;
+//        }
+//
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//        System.out.println("welcome to smart file system");
+//        boolean shutDownFlag = false;
+//        while(!shutDownFlag){
+//            System.out.print("~smart: ");
+//            String str;
+//            try {
+//                str = reader.readLine();
+//            } catch (IOException e) {
+//                LOGGER.fatal("read command failed");
+//                shutUpGracefully(reader);
+//                shutDownFlag = true;
+//                continue;
+//            }
+//            String[] commandAndArgs = str.split(" ");
+//            switch (commandAndArgs[0]) {
+//                case "quit" -> {
+//                    shutUpGracefully(reader);
+//                    shutDownFlag = true;
+//                }
+//                case "new-file","newFile" -> newFile(commandAndArgs);
+//                case "read" -> read(commandAndArgs);
+//                case "write" -> write(commandAndArgs);
+//                case "pos" -> pos(commandAndArgs);
+//                case "move" -> move(commandAndArgs);
+//                case "size" -> size(commandAndArgs);
+//                case "close" -> close(commandAndArgs);
+//                case "set-size","setSize" -> setSize(commandAndArgs);
+//                case "smart-cat", "smartCat" -> smartCat(commandAndArgs);
+//                case "smart-hex", "smartHex" -> smartHex(commandAndArgs);
+//                case "smart-write", "smartWrite" -> smartWrite(commandAndArgs);
+//                case "smart-copy", "smartCopy" -> smartCopy(commandAndArgs);
+//                case "-help" -> printHelp();
+//                default -> {
+//                    defaultOutput();
+//                    printHelp();
+//                }
+//            }
+//        }
+//    }
+
     /**
      * the fileForm must exists, fileTo may be created
      * @param commandAndArgs the args
      */
-    private static void smartCopy(String[] commandAndArgs) {
+    public String smartCopy(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 3) {
-            printCommandExample("smartCopy");
-            defaultOutput();
+            returnValue += printCommandExample("smartCopy");
+            returnValue += defaultOutput();
         } else {
             String fileId1 = commandAndArgs[1];
             File fileFrom;
@@ -178,33 +653,36 @@ public class Application {
                     fileTo = fileManagerController.newFile(fileToId.getFileId(),fileToId.getFileManagerId());
                 }
             }catch (FileIdWithManagerIdFormatException e){
-                errorOutput("invalid fileIdFormat -> " + e.getMessage());
-                printCommandExample("smartCopy");
-                return;
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += printCommandExample("smartCopy");
+                return returnValue;
             }
             if (fileFrom == null) {
-                errorOutput("file not exist");
+                returnValue += errorOutput("file not exist");
             } else {
                 try {
-                    UserUtils.smartCopy(fileFrom, fileTo);
+                    returnValue += UserUtils.smartCopy(fileFrom, fileTo);
                 } catch (IOException e) {
-                    errorOutput("IO failed -> " + e.getMessage());
-                    printCommandExample("smartCopy");
+                    returnValue += errorOutput("IO failed -> " + e.getMessage());
+                    returnValue += printCommandExample("smartCopy");
                 } catch (CorruptedFileException e) {
-                    errorOutput("file corrupted -> " + e.getMessage());
-                    printCommandExample("smartCopy");
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += printCommandExample("smartCopy");
                 } catch (AllocateNewBlockFailedException e) {
-                    errorOutput("block allocate failed -> " + e.getMessage());
-                    printCommandExample("smartCopy");
+                    returnValue += errorOutput("block allocate failed -> " + e.getMessage());
+                    returnValue +=printCommandExample("smartCopy");
                 }
             }
         }
+        return  returnValue;
     }
 
-    private static void smartWrite(String[] commandAndArgs) {
+    public String smartWrite(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 4) {
-            printCommandExample("smartWrite");
-            defaultOutput();
+            returnValue += printCommandExample("smartWrite");
+            returnValue += defaultOutput();
+            return returnValue;
         } else {
             String indexStr = commandAndArgs[2];
             int index;
@@ -214,120 +692,131 @@ public class Application {
                 index = Integer.parseInt(indexStr);
                 file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             } catch (NumberFormatException e) {
-                errorOutput("index not valid -> " + e.getMessage());
-                printCommandExample("smartWrite");
-                return;
+                returnValue += errorOutput("index not valid -> " + e.getMessage());
+                returnValue += printCommandExample("smartWrite");
+                return returnValue;
             }catch (FileIdWithManagerIdFormatException e){
-                errorOutput("invalid fileIdFormat -> " + e.getMessage());
-                printCommandExample("smartWrite");
-                return;
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += printCommandExample("smartWrite");
+                return returnValue;
             }
             if (file == null) {
-                errorOutput("file not exist");
+                returnValue += errorOutput("file not exist");
             } else {
                 try {
-                    UserUtils.smartWrite(file, index, commandAndArgs[3]);
+                    returnValue += UserUtils.smartWrite(file, index, commandAndArgs[3]);
                 } catch (IllegalCursorException e) {
-                    errorOutput("illegal cursor place -> " + e.getMessage());
+                    returnValue += errorOutput("illegal cursor place -> " + e.getMessage());
+                    returnValue += printCommandExample("smartWrite");
                 } catch (AllocateNewBlockFailedException e) {
-                    errorOutput("block allocate failed -> " + e.getMessage());
+                    returnValue += errorOutput("block allocate failed -> " + e.getMessage());
+                    returnValue += printCommandExample("smartWrite");
                 } catch (IOException e) {
-                    errorOutput("IO failed -> " + e.getMessage());
+                    returnValue += errorOutput("IO failed -> " + e.getMessage());
+                    returnValue += printCommandExample("smartWrite");
                 } catch (CorruptedFileException e) {
-                    errorOutput("file corrupted -> " + e.getMessage());
-                }finally {
-                    printCommandExample("smartWrite");
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += printCommandExample("smartWrite");
                 }
             }
+            return returnValue;
         }
     }
 
-    private static void smartHex(String[] commandAndArgs) {
+    public String smartHex(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("smartHex");
-            defaultOutput();
+            returnValue += printCommandExample("smartHex");
+            returnValue += defaultOutput();
+            return returnValue;
         } else {
             String blockId = commandAndArgs[1];
             Block block;
             try{
                 block = blockManagerController.getBlock(new BlockIndexIdWithManagerId(blockId));
             }catch (BlockIndexIdWithManagerIdFormatException e){
-                errorOutput("invalid blockIdFormat -> " + e.getMessage());
-                printCommandExample("smartHex");
-                return;
+                returnValue += errorOutput("invalid blockIdFormat -> " + e.getMessage());
+                returnValue += printCommandExample("smartHex");
+                return returnValue;
             }
             if (block == null) {
-                errorOutput("block not exist");
+                returnValue += errorOutput("block not exist");
             } else {
                 try {
-                    UserUtils.smartHex(block);
+                    returnValue += UserUtils.smartHex(block);
                 } catch (IOException e) {
-                    printCommandExample("smartHex");
-                    errorOutput("read failed -> " + e.getMessage());
+                    returnValue += printCommandExample("smartHex");
+                    returnValue += errorOutput("read failed -> " + e.getMessage());
                 }
             }
+            return returnValue;
         }
     }
 
-    private static void smartCat(String[] commandAndArgs) {
+    public String smartCat(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("smartCat");
-            defaultOutput();
+            returnValue += printCommandExample("smartCat");
+            returnValue += defaultOutput();
         } else {
             String fileId = commandAndArgs[1];
             File file;
             try{
                 file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             }catch (FileIdWithManagerIdFormatException e){
-                errorOutput("invalid fileIdFormat -> " + e.getMessage());
-                printCommandExample("smartCat");
-                return;
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += printCommandExample("smartCat");
+                return returnValue;
             }
             if (file == null) {
-                errorOutput("file not exist");
+                returnValue += errorOutput("file not exist");
             } else {
                 try {
-                    UserUtils.smartCat(file);
+                    returnValue += UserUtils.smartCat(file);
                 } catch (IOException e) {
-                    errorOutput("read failed -> " + e.getMessage());
-                    printCommandExample("smartCat");
+                    returnValue += errorOutput("read failed -> " + e.getMessage());
+                    returnValue += printCommandExample("smartCat");
                 } catch (CorruptedFileException e) {
-                    errorOutput("file corrupted -> " + e.getMessage());
-                    printCommandExample("smartCat");
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += printCommandExample("smartCat");
                 }
             }
         }
+        return returnValue;
     }
 
-    private static void newFile(String[] commandAndArgs) {
+    public String newFile(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("newFile");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("newFile");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         int id;
         try{
             id = Integer.parseInt(fileId);
         }catch (NumberFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("newFile");
-            return;
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("newFile");
+            return returnValue;
         }
         File file = fileManagerController.newFile(new FileId(id));
         if(file == null){
-            errorOutput("create file fail");
-            printCommandExample("newFile");
+            returnValue += errorOutput("create file fail");
+            returnValue += printCommandExample("newFile");
         }else{
-            System.out.println(file.getFileManager().getId().getIdString() + "-" + file.getFileId().getIdString());
+            returnValue += file.getFileManager().getId().getIdString() + "-" + file.getFileId().getIdString();
         }
+        return returnValue;
     }
 
-    private static void read(String[] commandAndArgs) {
+    public String read(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 3) {
-            printCommandExample("read");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("read");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         String lengthStr = commandAndArgs[2];
@@ -337,34 +826,36 @@ public class Application {
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             length = Long.parseLong(lengthStr);
         }catch (NumberFormatException e){
-            errorOutput("invalid length -> " + e.getMessage());
-            printCommandExample("read");
-            return;
+            returnValue += errorOutput("invalid length -> " + e.getMessage());
+            returnValue += printCommandExample("read");
+            return returnValue;
         } catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("read");
-            return;
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("read");
+            return returnValue;
         }
         if (file == null) {
-            errorOutput("file not exist");
+            returnValue += errorOutput("file not exist");
         } else {
             try {
                 file.read((int) length);
             } catch (IOException e) {
-                errorOutput("read failed -> " + e.getMessage());
-                printCommandExample("read");
+                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += printCommandExample("read");
             } catch (CorruptedFileException e) {
-                errorOutput("file corrupted -> " + e.getMessage());
-                printCommandExample("read");
+                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += printCommandExample("read");
             }
         }
+        return  returnValue;
     }
 
-    private static void write(String[] commandAndArgs) {
+    public String write(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 3) {
-            printCommandExample("write");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("write");
+            returnValue += defaultOutput();
+            return returnValue;
         }
 
         String fileId = commandAndArgs[1];
@@ -372,12 +863,12 @@ public class Application {
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("write");
-            return;
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("write");
+            return returnValue;
         }
         if (file == null) {
-            errorOutput("file not exist");
+            returnValue += errorOutput("file not exist");
         } else {
             StringBuilder toWrite = new StringBuilder();
             for(int i = 2;i < commandAndArgs.length;i++){
@@ -386,51 +877,54 @@ public class Application {
             try {
                 file.write(toWrite.toString().getBytes());
             } catch (IOException e) {
-                errorOutput("read failed -> " + e.getMessage());
-                printCommandExample("write");
+                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += printCommandExample("write");
             } catch (CorruptedFileException e) {
-                errorOutput("file corrupted -> " + e.getMessage());
-                printCommandExample("write");
+                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += printCommandExample("write");
             } catch (AllocateNewBlockFailedException e) {
-                errorOutput("fail -> " + e.getMessage());
-                printCommandExample("write");
+                returnValue += errorOutput("fail -> " + e.getMessage());
+                returnValue += printCommandExample("write");
             }
-
         }
+        return returnValue;
     }
 
-    private static void pos(String[] commandAndArgs) {
+    public String pos(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("pos");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("pos");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         File file;
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
-            System.out.println(file.pos());
+            returnValue += file.pos();
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("pos");
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("pos");
         }
+        return returnValue;
     }
 
 
-    private static void move(String[] commandAndArgs) {
+    public String move(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 4) {
-            printCommandExample("move");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("move");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         File file;
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("move");
-            return;
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("move");
+            return returnValue;
         }
         int index;
         int cursor;
@@ -439,19 +933,21 @@ public class Application {
             cursor = Integer.parseInt(commandAndArgs[3]);
             file.move(index,cursor);
         }catch (NumberFormatException e){
-            errorOutput("invalid positionFormat -> " + e.getMessage());
-            printCommandExample("move");
+            returnValue += errorOutput("invalid positionFormat -> " + e.getMessage());
+            returnValue += printCommandExample("move");
         } catch (IllegalCursorException e) {
-            errorOutput("illegal position -> " + e.getMessage());
-            printCommandExample("move");
+            returnValue += errorOutput("illegal position -> " + e.getMessage());
+            returnValue += printCommandExample("move");
         }
+        return returnValue;
     }
 
-    private static void size(String[] commandAndArgs) {
+    public String size(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("size");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("size");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         File file;
@@ -459,24 +955,26 @@ public class Application {
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             size = file.size();
-            System.out.println(size);
+            returnValue += size;
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("size");
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("size");
         } catch (CorruptedFileException e) {
-            errorOutput("file corrupted -> " + e.getMessage());
-            printCommandExample("size");
+            returnValue += errorOutput("file corrupted -> " + e.getMessage());
+            returnValue += printCommandExample("size");
         } catch (IOException e) {
-            errorOutput("read failed -> " + e.getMessage());
-            printCommandExample("size");
+            returnValue += errorOutput("read failed -> " + e.getMessage());
+            returnValue += printCommandExample("size");
         }
+        return returnValue;
     }
 
-    private static void close(String[] commandAndArgs) {
+    public String close(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 2) {
-            printCommandExample("close");
-            defaultOutput();
-            return;
+            returnValue += printCommandExample("close");
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         File file;
@@ -484,16 +982,18 @@ public class Application {
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             file.close();
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("close");
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("close");
         }
+        return returnValue;
     }
 
-    private static void setSize(String[] commandAndArgs) {
+    public String setSize(String[] commandAndArgs) {
+        String returnValue = "";
         if (commandAndArgs.length < 3) {
             printCommandExample("setSize");
-            defaultOutput();
-            return;
+            returnValue += defaultOutput();
+            return returnValue;
         }
         String fileId = commandAndArgs[1];
         String lengthStr = commandAndArgs[2];
@@ -503,117 +1003,60 @@ public class Application {
             length = Long.parseLong(lengthStr);
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            errorOutput("invalid fileIdFormat -> " + e.getMessage());
-            printCommandExample("setSize");
-            return;
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += printCommandExample("setSize");
+            return returnValue;
         }catch (NumberFormatException e){
-            errorOutput("invalid length -> " + e.getMessage());
-            printCommandExample("setSize");
-            return;
+            returnValue += errorOutput("invalid length -> " + e.getMessage());
+            returnValue += printCommandExample("setSize");
+            return returnValue;
         }
         if (file == null) {
-            errorOutput("file not exist");
+            returnValue += errorOutput("file not exist");
         } else {
             try {
                 file.setSize(length);
             } catch (IOException e) {
-                errorOutput("read failed -> " + e.getMessage());
-                printCommandExample("setSize");
+                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += printCommandExample("setSize");
             } catch (CorruptedFileException e) {
-                errorOutput("file corrupted -> " + e.getMessage());
-                printCommandExample("setSize");
+                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += printCommandExample("setSize");
             } catch (AllocateNewBlockFailedException e) {
-                errorOutput("fail -> " + e.getMessage());
-                printCommandExample("setSize");
+                returnValue += errorOutput("fail -> " + e.getMessage());
+                returnValue += printCommandExample("setSize");
             }
         }
+        return returnValue;
     }
 
-    private static void printCommandExample(String commandName){
-        System.out.println(commandName + " : " + commandFormatHelpers.get(commandName));
+    public String printHelp(){
+        return "commands :\n" +
+               "\t new-file : create new file with the given name(name must be a number)\n" +
+               "\t read : read data from a file with given length\n" +
+               "\t write : write data to a file\n" +
+               "\t pos : show the cursor of a file\n" +
+               "\t move : move the cursor of a file\n" +
+               "\t size : get the size of a file\n" +
+               "\t close : close a file\n" +
+               "\t set-size : set the size of a file(extra bytes would be 0x00)\n" +
+               "\t smart-cat : read all the data start from the cursor\n" +
+               "\t smart-write : write to a specific place of a file\n" +
+               "\t smart-hex : read the data of a block in the form of hex numbers\n" +
+               "\t smart-copy : copy the data of a file to another file(depend on their current cursor)\n";
     }
 
-
-    private static void printHelp(){
-        System.out.println("commands : ");
-        System.out.println("\t new-file : create new file with the given name(name must be a number)");
-        System.out.println("\t read : read data from a file with given length");
-        System.out.println("\t write : write data to a file");
-        System.out.println("\t pos : show the cursor of a file");
-        System.out.println("\t move : move the cursor of a file");
-        System.out.println("\t size : get the size of a file");
-        System.out.println("\t close : close a file");
-        System.out.println("\t set-size : set the size of a file(extra bytes would be 0x00)");
-        System.out.println("\t smart-cat : read all the data start from the cursor");
-        System.out.println("\t smart-write : write to a specific place of a file");
-        System.out.println("\t smart-hex : read the data of a block in the form of hex numbers");
-        System.out.println("\t smart-copy : copy the data of a file to another file(depend on their current cursor)");
-
+    public String defaultOutput(){
+        return "invalid command, use -help for help\n";
     }
 
-    private static void defaultOutput(){
-        System.out.println("invalid command, use -help for help");
+    private String printCommandExample(String commandName){
+        return commandName + " : " + commandFormatHelpers.get(commandName) + "\n";
     }
 
-    private static void errorOutput(String info){
-        System.out.println(info + ", use -help for help");
+    private String errorOutput(String info){
+        return info + ", use -help for help" + "\n";
     }
 
-    private static void shutUpGracefully(Reader reader){
-        try {
-            reader.close();
-        } catch (IOException e) {
-            LOGGER.warn("close standard input reader failed");
-        }
-    }
-
-    public static void main(String[] args){
-        try {
-            initialize();
-        } catch (InitiationFailedException e) {
-            System.out.println("system initialize failed");
-            return;
-        }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("welcome to smart file system");
-        boolean shutDownFlag = false;
-        while(!shutDownFlag){
-            System.out.print("~smart: ");
-            String str;
-            try {
-                str = reader.readLine();
-            } catch (IOException e) {
-                LOGGER.fatal("read command failed");
-                shutUpGracefully(reader);
-                shutDownFlag = true;
-                continue;
-            }
-            String[] commandAndArgs = str.split(" ");
-            switch (commandAndArgs[0]) {
-                case "quit" -> {
-                    shutUpGracefully(reader);
-                    shutDownFlag = true;
-                }
-                case "new-file","newFile" -> newFile(commandAndArgs);
-                case "read" -> read(commandAndArgs);
-                case "write" -> write(commandAndArgs);
-                case "pos" -> pos(commandAndArgs);
-                case "move" -> move(commandAndArgs);
-                case "size" -> size(commandAndArgs);
-                case "close" -> close(commandAndArgs);
-                case "set-size","setSize" -> setSize(commandAndArgs);
-                case "smart-cat", "smartCat" -> smartCat(commandAndArgs);
-                case "smart-hex", "smartHex" -> smartHex(commandAndArgs);
-                case "smart-write", "smartWrite" -> smartWrite(commandAndArgs);
-                case "smart-copy", "smartCopy" -> smartCopy(commandAndArgs);
-                case "-help" -> printHelp();
-                default -> {
-                    defaultOutput();
-                    printHelp();
-                }
-            }
-        }
-    }
 
 }

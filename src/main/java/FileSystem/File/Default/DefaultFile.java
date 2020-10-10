@@ -96,11 +96,11 @@ public class DefaultFile implements File {
                     /*
                         add buffer support
                      */
-                    BlockBuffer buffer = Application.bufferManager.getBuffer(blockIndexIdWithManagerId);
+                    BlockBuffer buffer = Application.getApplication().bufferManager.getBuffer(blockIndexIdWithManagerId);
                     if(buffer != null){
                         bytes = buffer.get();
                     }else{
-                        Block block = Application.blockManagerController.getBlock(blockIndexIdWithManagerId);
+                        Block block = Application.getApplication().blockManagerController.getBlock(blockIndexIdWithManagerId);
                         bytes = block.read();
                     }
                     if(bytes == null){
@@ -205,7 +205,7 @@ public class DefaultFile implements File {
 
     private void allocateBlock(List<BlockIndexIdWithManagerId> list, byte[] temp) throws AllocateNewBlockFailedException {
         for(int j = 0, k = 0; j < Properties.BACK_UP_COUNT && k < Properties.BACK_UP_COUNT * 2; j++,k++){
-            Block newBlock = Application.blockManagerController.newBlock(temp);
+            Block newBlock = Application.getApplication().blockManagerController.newBlock(temp);
             if(newBlock == null){
                 if(j == 0 && k == Properties.BACK_UP_COUNT * 2 - 1){
                     LOGGER.error("allocate new Block failed");
@@ -251,15 +251,15 @@ public class DefaultFile implements File {
     private int getLastBlockSize(int blockCount, List<List<BlockIndexIdWithManagerId>> blocks) throws IOException {
         int lastBlockSize = -1;
         for(BlockIndexIdWithManagerId id : blocks.get(blockCount)){
-            if(Application.bufferManager.containsBuffer(id)){
-                lastBlockSize = Application.bufferManager.getBuffer(id).get().length;
+            if(Application.getApplication().bufferManager.containsBuffer(id)){
+                lastBlockSize = Application.getApplication().bufferManager.getBuffer(id).get().length;
                 break;
             }
         }
         if(lastBlockSize == -1){
             //TODO
             //here assumes that meta is always right
-           lastBlockSize = Application.blockManagerController.getBlock(blocks.get(blockCount).get(0)).getRealSize();
+           lastBlockSize = Application.getApplication().blockManagerController.getBlock(blocks.get(blockCount).get(0)).getRealSize();
         }
         return lastBlockSize;
     }
