@@ -25,10 +25,7 @@ import FileSystem.Util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -638,7 +635,7 @@ public class Application {
     public String smartCopy(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 3) {
-            returnValue += printCommandExample("smartCopy");
+            returnValue += printCommandExample("smartCopy") + "\n";
             returnValue += defaultOutput();
         } else {
             String fileId1 = commandAndArgs[1];
@@ -653,7 +650,7 @@ public class Application {
                     fileTo = fileManagerController.newFile(fileToId.getFileId(),fileToId.getFileManagerId());
                 }
             }catch (FileIdWithManagerIdFormatException e){
-                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("smartCopy");
                 return returnValue;
             }
@@ -663,13 +660,13 @@ public class Application {
                 try {
                     returnValue += UserUtils.smartCopy(fileFrom, fileTo);
                 } catch (IOException e) {
-                    returnValue += errorOutput("IO failed -> " + e.getMessage());
+                    returnValue += errorOutput("IO failed -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartCopy");
                 } catch (CorruptedFileException e) {
-                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartCopy");
                 } catch (AllocateNewBlockFailedException e) {
-                    returnValue += errorOutput("block allocate failed -> " + e.getMessage());
+                    returnValue += errorOutput("block allocate failed -> " + e.getMessage()) + "\n";
                     returnValue +=printCommandExample("smartCopy");
                 }
             }
@@ -680,7 +677,7 @@ public class Application {
     public String smartWrite(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 4) {
-            returnValue += printCommandExample("smartWrite");
+            returnValue += printCommandExample("smartWrite") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         } else {
@@ -692,11 +689,11 @@ public class Application {
                 index = Integer.parseInt(indexStr);
                 file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             } catch (NumberFormatException e) {
-                returnValue += errorOutput("index not valid -> " + e.getMessage());
+                returnValue += errorOutput("index not valid -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("smartWrite");
                 return returnValue;
             }catch (FileIdWithManagerIdFormatException e){
-                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("smartWrite");
                 return returnValue;
             }
@@ -704,18 +701,18 @@ public class Application {
                 returnValue += errorOutput("file not exist");
             } else {
                 try {
-                    returnValue += UserUtils.smartWrite(file, index, commandAndArgs[3]);
+                    returnValue += UserUtils.smartWrite(file, index, commandAndArgs[3]) + "\n";
                 } catch (IllegalCursorException e) {
-                    returnValue += errorOutput("illegal cursor place -> " + e.getMessage());
+                    returnValue += errorOutput("illegal cursor place -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartWrite");
                 } catch (AllocateNewBlockFailedException e) {
-                    returnValue += errorOutput("block allocate failed -> " + e.getMessage());
+                    returnValue += errorOutput("block allocate failed -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartWrite");
                 } catch (IOException e) {
-                    returnValue += errorOutput("IO failed -> " + e.getMessage());
+                    returnValue += errorOutput("IO failed -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartWrite");
                 } catch (CorruptedFileException e) {
-                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartWrite");
                 }
             }
@@ -726,7 +723,7 @@ public class Application {
     public String smartHex(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("smartHex");
+            returnValue += printCommandExample("smartHex") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         } else {
@@ -735,7 +732,7 @@ public class Application {
             try{
                 block = blockManagerController.getBlock(new BlockIndexIdWithManagerId(blockId));
             }catch (BlockIndexIdWithManagerIdFormatException e){
-                returnValue += errorOutput("invalid blockIdFormat -> " + e.getMessage());
+                returnValue += errorOutput("invalid blockIdFormat -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("smartHex");
                 return returnValue;
             }
@@ -745,7 +742,7 @@ public class Application {
                 try {
                     returnValue += UserUtils.smartHex(block);
                 } catch (IOException e) {
-                    returnValue += printCommandExample("smartHex");
+                    returnValue += printCommandExample("smartHex") + "\n";
                     returnValue += errorOutput("read failed -> " + e.getMessage());
                 }
             }
@@ -756,7 +753,7 @@ public class Application {
     public String smartCat(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("smartCat");
+            returnValue += printCommandExample("smartCat") + "\n";
             returnValue += defaultOutput();
         } else {
             String fileId = commandAndArgs[1];
@@ -764,7 +761,7 @@ public class Application {
             try{
                 file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             }catch (FileIdWithManagerIdFormatException e){
-                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+                returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("smartCat");
                 return returnValue;
             }
@@ -774,10 +771,10 @@ public class Application {
                 try {
                     returnValue += UserUtils.smartCat(file);
                 } catch (IOException e) {
-                    returnValue += errorOutput("read failed -> " + e.getMessage());
+                    returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartCat");
                 } catch (CorruptedFileException e) {
-                    returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                    returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartCat");
                 }
             }
@@ -788,7 +785,7 @@ public class Application {
     public String newFile(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("newFile");
+            returnValue += printCommandExample("newFile") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -797,16 +794,16 @@ public class Application {
         try{
             id = Integer.parseInt(fileId);
         }catch (NumberFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("newFile");
             return returnValue;
         }
         File file = fileManagerController.newFile(new FileId(id));
         if(file == null){
-            returnValue += errorOutput("create file fail");
+            returnValue += errorOutput("create file fail") + "\n";
             returnValue += printCommandExample("newFile");
         }else{
-            returnValue += file.getFileManager().getId().getIdString() + "-" + file.getFileId().getIdString();
+            returnValue += file.getFileManager().getId().getIdString() + "-" + file.getFileId().getIdString() + "\n";
         }
         return returnValue;
     }
@@ -814,7 +811,7 @@ public class Application {
     public String read(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 3) {
-            returnValue += printCommandExample("read");
+            returnValue += printCommandExample("read") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -826,11 +823,11 @@ public class Application {
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             length = Long.parseLong(lengthStr);
         }catch (NumberFormatException e){
-            returnValue += errorOutput("invalid length -> " + e.getMessage());
+            returnValue += errorOutput("invalid length -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("read");
             return returnValue;
         } catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("read");
             return returnValue;
         }
@@ -838,12 +835,16 @@ public class Application {
             returnValue += errorOutput("file not exist");
         } else {
             try {
-                file.read((int) length);
+                byte[] read = file.read((int) length);
+                returnValue += read;
+                if(read.length < length){
+                    returnValue +=("\n" + " not enough bytes left");
+                }
             } catch (IOException e) {
-                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("read");
             } catch (CorruptedFileException e) {
-                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("read");
             }
         }
@@ -853,7 +854,7 @@ public class Application {
     public String write(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 3) {
-            returnValue += printCommandExample("write");
+            returnValue += printCommandExample("write") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -863,7 +864,7 @@ public class Application {
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("write");
             return returnValue;
         }
@@ -873,17 +874,21 @@ public class Application {
             StringBuilder toWrite = new StringBuilder();
             for(int i = 2;i < commandAndArgs.length;i++){
                 toWrite.append(commandAndArgs[i]);
+                if(i != commandAndArgs.length - 1){
+                    toWrite.append(" ");
+                }
             }
+
             try {
                 file.write(toWrite.toString().getBytes());
             } catch (IOException e) {
-                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("write");
             } catch (CorruptedFileException e) {
-                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("write");
             } catch (AllocateNewBlockFailedException e) {
-                returnValue += errorOutput("fail -> " + e.getMessage());
+                returnValue += errorOutput("fail -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("write");
             }
         }
@@ -893,7 +898,7 @@ public class Application {
     public String pos(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("pos");
+            returnValue += printCommandExample("pos") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -903,7 +908,7 @@ public class Application {
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             returnValue += file.pos();
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("pos");
         }
         return returnValue;
@@ -913,7 +918,7 @@ public class Application {
     public String move(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 4) {
-            returnValue += printCommandExample("move");
+            returnValue += printCommandExample("move") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -922,7 +927,7 @@ public class Application {
         try{
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("move");
             return returnValue;
         }
@@ -933,10 +938,10 @@ public class Application {
             cursor = Integer.parseInt(commandAndArgs[3]);
             file.move(index,cursor);
         }catch (NumberFormatException e){
-            returnValue += errorOutput("invalid positionFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid positionFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("move");
         } catch (IllegalCursorException e) {
-            returnValue += errorOutput("illegal position -> " + e.getMessage());
+            returnValue += errorOutput("illegal position -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("move");
         }
         return returnValue;
@@ -945,7 +950,7 @@ public class Application {
     public String size(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("size");
+            returnValue += printCommandExample("size") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -957,13 +962,13 @@ public class Application {
             size = file.size();
             returnValue += size;
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("size");
         } catch (CorruptedFileException e) {
-            returnValue += errorOutput("file corrupted -> " + e.getMessage());
+            returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("size");
         } catch (IOException e) {
-            returnValue += errorOutput("read failed -> " + e.getMessage());
+            returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("size");
         }
         return returnValue;
@@ -972,7 +977,7 @@ public class Application {
     public String close(String[] commandAndArgs) {
         String returnValue = "";
         if (commandAndArgs.length < 2) {
-            returnValue += printCommandExample("close");
+            returnValue += printCommandExample("close") + "\n";
             returnValue += defaultOutput();
             return returnValue;
         }
@@ -982,7 +987,7 @@ public class Application {
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
             file.close();
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("close");
         }
         return returnValue;
@@ -1003,11 +1008,11 @@ public class Application {
             length = Long.parseLong(lengthStr);
             file = fileManagerController.getFile(new FileIdWithManagerId(fileId));
         }catch (FileIdWithManagerIdFormatException e){
-            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage());
+            returnValue += errorOutput("invalid fileIdFormat -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("setSize");
             return returnValue;
         }catch (NumberFormatException e){
-            returnValue += errorOutput("invalid length -> " + e.getMessage());
+            returnValue += errorOutput("invalid length -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("setSize");
             return returnValue;
         }
@@ -1017,13 +1022,13 @@ public class Application {
             try {
                 file.setSize(length);
             } catch (IOException e) {
-                returnValue += errorOutput("read failed -> " + e.getMessage());
+                returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("setSize");
             } catch (CorruptedFileException e) {
-                returnValue += errorOutput("file corrupted -> " + e.getMessage());
+                returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("setSize");
             } catch (AllocateNewBlockFailedException e) {
-                returnValue += errorOutput("fail -> " + e.getMessage());
+                returnValue += errorOutput("fail -> " + e.getMessage()) + "\n";
                 returnValue += printCommandExample("setSize");
             }
         }
@@ -1043,19 +1048,19 @@ public class Application {
                "\t smart-cat : read all the data start from the cursor\n" +
                "\t smart-write : write to a specific place of a file\n" +
                "\t smart-hex : read the data of a block in the form of hex numbers\n" +
-               "\t smart-copy : copy the data of a file to another file(depend on their current cursor)\n";
+               "\t smart-copy : copy the data of a file to another file(depend on their current cursor)";
     }
 
     public String defaultOutput(){
-        return "invalid command, use -help for help\n";
+        return "invalid command, use -help for help";
     }
 
     private String printCommandExample(String commandName){
-        return commandName + " : " + commandFormatHelpers.get(commandName) + "\n";
+        return commandName + " : " + commandFormatHelpers.get(commandName);
     }
 
     private String errorOutput(String info){
-        return info + ", use -help for help" + "\n";
+        return info + ", use -help for help";
     }
 
 
