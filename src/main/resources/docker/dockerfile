@@ -1,0 +1,6 @@
+FROM openjdk:14
+MAINTAINER JinaxCai
+RUN mkdir /usr/local/server
+ADD Server.jar /usr/local/server
+WORKDIR /usr/local/server
+CMD ["java","-jar","Server.jar"]

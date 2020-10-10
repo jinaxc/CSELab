@@ -16,7 +16,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>FileSystem.Application.Application</mainClass>
+                            <mainClass>Server.SmartFileSystemServer</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

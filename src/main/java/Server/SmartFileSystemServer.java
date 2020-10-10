@@ -16,6 +16,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * @author jinaxCai
@@ -28,7 +29,7 @@ public class SmartFileSystemServer {
             return;
         }
         EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(1);
         try {
             ServerBootstrap b = new ServerBootstrap(); // (2)
             b.group(bossGroup, workerGroup)
@@ -52,7 +53,7 @@ public class SmartFileSystemServer {
 //                                    super.flush(ctx);
 //                                }
 //                            });
-//                            pipeline.addLast(new IdleStateHandler(60,60, 0));
+                            pipeline.addLast(new IdleStateHandler(60,60, 0));
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(64 * 1024));
                             pipeline.addLast(new HttpRequestHandler("/ws"));
