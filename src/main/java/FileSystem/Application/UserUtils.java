@@ -27,13 +27,12 @@ public class UserUtils {
             byte[] bytes = file.read(Properties.BLOCK_SIZE);
             returnValue.append(new String(bytes));
             if(bytes.length == 0){
-                returnValue.append("\n" +
-                                   " not enough bytes left\040\n");
+//                returnValue.append("\n" +
+//                                   " not enough bytes left\040\n");
                 return returnValue.toString();
             }
             left -= bytes.length;
         }
-        returnValue.append("\n");
         return returnValue.toString();
     }
     public static String smartHex(Block block) throws IOException {
