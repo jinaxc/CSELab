@@ -4,6 +4,7 @@ import FileSystem.Exception.AllocateNewBlockFailedException;
 import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
 import FileSystem.Exception.CorruptedFileException;
 import FileSystem.Exception.IllegalCursorException;
+import FileSystem.File.Default.FileId;
 import FileSystem.Manager.FileManager;
 import FileSystem.Util.Id;
 
@@ -16,7 +17,7 @@ public interface File {
 
     void initializeFile() throws IOException;
 
-    Id getFileId();
+    FileId getFileId();
     FileManager getFileManager();
     byte[] read(int length) throws CorruptedFileException, IOException;
     void write(byte[] b) throws CorruptedFileException, IOException, AllocateNewBlockFailedException;

@@ -31,9 +31,9 @@ public class DefaultFile implements File {
     private final String fileMetaDataPath;
     private long cur;
     private final FileManager fileManager;
-    private final Id id;
+    private final FileId id;
 
-    public DefaultFile(String fileMetaDataPath, FileManager fileManager, Id id) {
+    public DefaultFile(String fileMetaDataPath, FileManager fileManager, FileId id) {
         this.fileMetaDataPath = fileMetaDataPath;
         this.id = id;
         this.cur = 0;
@@ -53,7 +53,7 @@ public class DefaultFile implements File {
     }
 
     @Override
-    public Id getFileId() {
+    public FileId getFileId() {
         return id;
     }
 

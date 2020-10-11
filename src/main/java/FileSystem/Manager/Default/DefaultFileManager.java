@@ -2,6 +2,7 @@ package FileSystem.Manager.Default;
 
 import FileSystem.Exception.InitiationFailedException;
 import FileSystem.File.Default.DefaultFile;
+import FileSystem.File.Default.FileId;
 import FileSystem.File.File;
 import FileSystem.Manager.FileManager;
 import FileSystem.Util.Id;
@@ -10,7 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +23,7 @@ public class DefaultFileManager implements FileManager {
     private final static Logger LOGGER = LogManager.getLogger(FileManager.class);
 
     private Map<Long, File> files;
-    private final Id id;
+    private final FileManagerId id;
 
     public DefaultFileManager(FileManagerId id) throws InitiationFailedException {
         this.id = id;
@@ -38,7 +41,7 @@ public class DefaultFileManager implements FileManager {
     }
 
     @Override
-    public Id getId() {
+    public FileManagerId getId() {
         return id;
     }
 
@@ -61,7 +64,7 @@ public class DefaultFileManager implements FileManager {
         String pathPrefix = Properties.FILE_PATH + id.getIdString() + "/" + fileId.getIdString();
         File file;
         try {
-            file = new DefaultFile(pathPrefix,this,fileId);
+            file = new DefaultFile(pathPrefix,this, (FileId) fileId);
             file.initializeFile();
             files.put(fileId.getId(),file);
         } catch (IOException e) {
@@ -69,5 +72,10 @@ public class DefaultFileManager implements FileManager {
             return null;
         }
         return file;
+    }
+
+    @Override
+    public List<File> listFiles() {
+        return new ArrayList<>(files.values());
     }
 }

@@ -10,7 +10,9 @@ import FileSystem.Manager.FileManager;
 import FileSystem.Util.Id;
 import FileSystem.Util.Properties;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -57,5 +59,14 @@ public class DefaultFileManagerController implements FileManagerController{
     @Override
     public File newFile(Id fileId,Id fileManagerId) {
         return managers[(int) fileManagerId.getId()].newFile(fileId);
+    }
+
+    @Override
+    public Map<FileManagerId, List<File>> listFiles() {
+        HashMap<FileManagerId, List<File>> map = new HashMap<>();
+        for(FileManager manager : managers){
+            map.put(manager.getId(),manager.listFiles());
+        }
+        return map;
     }
 }

@@ -836,7 +836,7 @@ public class Application {
         } else {
             try {
                 byte[] read = file.read((int) length);
-                returnValue += read;
+                returnValue += new String(read);
                 if(read.length < length){
                     returnValue +=("\n" + " not enough bytes left");
                 }
@@ -1034,10 +1034,22 @@ public class Application {
         }
         return returnValue;
     }
+    public String listFiles(){
+        StringBuilder returnValue = new StringBuilder();
+        Map<FileManagerId, List<File>> fileManagerIdListMap = fileManagerController.listFiles();
+        for(Map.Entry<FileManagerId, List<File>> entry : fileManagerIdListMap.entrySet()){
+            returnValue.append(entry.getKey().getIdString()).append(":").append("\n");
+            for(File file : entry.getValue()){
+                returnValue.append("\t").append(file.getFileId().getIdString()).append("\n");
+            }
+        }
+        return returnValue.toString();
+    }
 
     public String printHelp(){
         return "commands :\n" +
                "\t new-file : create new file with the given name(name must be a number)\n" +
+               "\t list-files : list all the files classified by fileManager\n" +
                "\t read : read data from a file with given length\n" +
                "\t write : write data to a file\n" +
                "\t pos : show the cursor of a file\n" +
@@ -1050,6 +1062,7 @@ public class Application {
                "\t smart-hex : read the data of a block in the form of hex numbers\n" +
                "\t smart-copy : copy the data of a file to another file(depend on their current cursor)";
     }
+
 
     public String defaultOutput(){
         return "invalid command, use -help for help";

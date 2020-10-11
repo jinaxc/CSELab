@@ -38,6 +38,10 @@ public class CommandHandler extends SimpleChannelInboundHandler<ByteBuf> {
             case "newFile":
                 ctx.writeAndFlush(wrapWebSocketFrame(app.newFile(commandAndArgs)));
                 break;
+            case "list-files":
+            case "listFiles":
+                ctx.writeAndFlush(wrapWebSocketFrame(app.listFiles()));
+                break;
             case "read":
                 ctx.writeAndFlush(wrapWebSocketFrame(app.read(commandAndArgs)));
                 break;
