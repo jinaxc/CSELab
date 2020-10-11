@@ -1,5 +1,6 @@
 package FileSystem.Controller;
 
+import FileSystem.Exception.FileExistedException;
 import FileSystem.Exception.InitiationFailedException;
 import FileSystem.File.Default.FileIdWithManagerId;
 import FileSystem.File.File;
@@ -50,14 +51,15 @@ public class DefaultFileManagerController implements FileManagerController{
      *
      * @param fileId file name
      * @return null if the manager returns a null file
+     * @throws FileExistedException if file already existed
      */
     @Override
-    public File newFile(Id fileId) {
+    public File newFile(Id fileId) throws FileExistedException {
         return managers[r.nextInt(COUNT)].newFile(fileId);
     }
 
     @Override
-    public File newFile(Id fileId,Id fileManagerId) {
+    public File newFile(Id fileId,Id fileManagerId) throws FileExistedException {
         return managers[(int) fileManagerId.getId()].newFile(fileId);
     }
 
