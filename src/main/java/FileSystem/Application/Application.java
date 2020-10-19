@@ -245,7 +245,14 @@ public class Application {
                 returnValue += errorOutput("file not exist");
             } else {
                 try {
-                    returnValue += UserUtils.smartWrite(file, index, commandAndArgs[3]) + "\n";
+                    StringBuilder toWrite = new StringBuilder();
+                    for(int i = 3;i < commandAndArgs.length;i++){
+                        toWrite.append(commandAndArgs[i]);
+                        if(i != commandAndArgs.length - 1){
+                            toWrite.append(" ");
+                        }
+                    }
+                    returnValue += UserUtils.smartWrite(file, index, toWrite.toString()) + "\n";
                 } catch (IllegalCursorException e) {
                     returnValue += errorOutput("illegal cursor place -> " + e.getMessage()) + "\n";
                     returnValue += printCommandExample("smartWrite");
@@ -493,6 +500,12 @@ public class Application {
             returnValue += printCommandExample("move");
         } catch (IllegalCursorException e) {
             returnValue += errorOutput("illegal position -> " + e.getMessage()) + "\n";
+            returnValue += printCommandExample("move");
+        } catch (CorruptedFileException e) {
+            returnValue += errorOutput("file corrupted -> " + e.getMessage()) + "\n";
+            returnValue += printCommandExample("move");
+        } catch (IOException e) {
+            returnValue += errorOutput("read failed -> " + e.getMessage()) + "\n";
             returnValue += printCommandExample("move");
         }
         return returnValue;
