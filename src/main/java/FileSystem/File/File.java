@@ -1,9 +1,8 @@
 package FileSystem.File;
 
-import FileSystem.Exception.AllocateNewBlockFailedException;
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
-import FileSystem.Exception.CorruptedFileException;
-import FileSystem.Exception.IllegalCursorException;
+import FileSystem.Exception.BlockException.AllocateNewBlockFailedException;
+import FileSystem.Exception.FileException.CorruptedFileException;
+import FileSystem.Exception.FileException.IllegalCursorException;
 import FileSystem.Manager.FileManager;
 import FileSystem.Util.Id;
 

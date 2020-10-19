@@ -3,7 +3,7 @@ package FileSystem.ReaderWriter;
 import FileSystem.Block.BlockData;
 import FileSystem.Block.BlockMeta;
 import FileSystem.Block.Default.BlockIndexIdWithManagerId;
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
+import FileSystem.Exception.BlockException.BlockIndexIdWithManagerIdFormatException;
 import FileSystem.Block.Default.DefaultBlockData;
 import FileSystem.Block.Default.DefaultBlockMeta;
 import FileSystem.File.Default.DefaultFileMetaData;

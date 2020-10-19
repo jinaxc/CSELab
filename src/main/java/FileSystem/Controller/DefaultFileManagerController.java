@@ -1,10 +1,9 @@
 package FileSystem.Controller;
 
-import FileSystem.Exception.FileExistedException;
+import FileSystem.Exception.FileException.FileExistedException;
 import FileSystem.Exception.InitiationFailedException;
 import FileSystem.File.Default.FileIdWithManagerId;
 import FileSystem.File.File;
-import FileSystem.Manager.BlockManager;
 import FileSystem.Manager.Default.DefaultFileManager;
 import FileSystem.Manager.Default.FileManagerId;
 import FileSystem.Manager.FileManager;

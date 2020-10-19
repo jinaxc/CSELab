@@ -4,7 +4,7 @@ import FileSystem.Application.Application;
 import FileSystem.Block.Block;
 import FileSystem.Block.BlockData;
 import FileSystem.Block.BlockMeta;
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
+import FileSystem.Exception.BlockException.BlockIndexIdWithManagerIdFormatException;
 import FileSystem.Manager.BlockManager;
 import FileSystem.ReaderWriter.AtomicBlockWriter;
 import FileSystem.Util.Properties;

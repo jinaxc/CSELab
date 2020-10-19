@@ -1,6 +1,6 @@
 package FileSystem.Manager;
 
-import FileSystem.Exception.FileExistedException;
+import FileSystem.Exception.FileException.FileExistedException;
 import FileSystem.File.File;
 import FileSystem.Util.Id;
 

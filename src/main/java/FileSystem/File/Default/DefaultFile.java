@@ -4,10 +4,10 @@ import FileSystem.Application.Application;
 import FileSystem.Block.Block;
 import FileSystem.Block.Default.BlockIndexIdWithManagerId;
 import FileSystem.Buffer.BlockBuffer;
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
-import FileSystem.Exception.AllocateNewBlockFailedException;
-import FileSystem.Exception.CorruptedFileException;
-import FileSystem.Exception.IllegalCursorException;
+import FileSystem.Exception.BlockException.BlockIndexIdWithManagerIdFormatException;
+import FileSystem.Exception.BlockException.AllocateNewBlockFailedException;
+import FileSystem.Exception.FileException.CorruptedFileException;
+import FileSystem.Exception.FileException.IllegalCursorException;
 import FileSystem.File.File;
 import FileSystem.File.FileMetaData;
 import FileSystem.Manager.FileManager;
@@ -195,9 +195,11 @@ public class DefaultFile implements File {
                 throw e;
             }
         }
-        //TODO need to deal with the exception to maintain consistency
-        //if any exception occurs, this two wont be executed thus wont modify the file
-        //TODO currently, if write the fileMeta failed then problem occurs
+        /**TODO
+         * need to deal with the exception to maintain consistency
+         * if any exception occurs, this two wont be executed thus wont modify the file
+         * currently, if write the fileMeta failed then problem occurs
+        **/
         fileMetaData.setSize(fileMetaData.getSize() + b.length);
         ReaderWriterUtil.writeFileMetaData(fileMetaData,fileMetaDataPath);
 

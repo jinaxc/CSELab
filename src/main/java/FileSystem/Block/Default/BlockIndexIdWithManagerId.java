@@ -1,6 +1,6 @@
 package FileSystem.Block.Default;
 
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
+import FileSystem.Exception.BlockException.BlockIndexIdWithManagerIdFormatException;
 import FileSystem.Manager.Default.BlockManagerId;
 import FileSystem.Util.Id;
 import FileSystem.Util.Properties;
@@ -32,7 +32,7 @@ public class BlockIndexIdWithManagerId implements Id {
         String[] split = idString.split(Properties.BLOCK_MANAGER_ID_AND_BLOCK_ID_SPLITTER + "");
         if(split.length != 2){
             LOGGER.error("invalid id {}",idString);
-            throw new BlockIndexIdWithManagerIdFormatException();
+            throw new BlockIndexIdWithManagerIdFormatException("invalid id");
         }
         try{
             this.blockManagerId = new BlockManagerId(Integer.parseInt(split[0].substring(2)));

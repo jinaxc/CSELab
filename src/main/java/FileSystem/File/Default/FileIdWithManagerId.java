@@ -1,5 +1,5 @@
 package FileSystem.File.Default;
-import FileSystem.Exception.FileIdWithManagerIdFormatException;
+import FileSystem.Exception.FileException.FileIdWithManagerIdFormatException;
 import FileSystem.Manager.Default.FileManagerId;
 import FileSystem.Util.Id;
 import FileSystem.Util.Properties;

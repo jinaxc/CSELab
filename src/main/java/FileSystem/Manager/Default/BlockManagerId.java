@@ -1,7 +1,6 @@
 package FileSystem.Manager.Default;
 
-import FileSystem.Block.Default.BlockIndexIdWithManagerId;
-import FileSystem.Exception.BlockManagerIdFormatException;
+import FileSystem.Exception.BlockException.BlockManagerIdFormatException;
 import FileSystem.Util.Id;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

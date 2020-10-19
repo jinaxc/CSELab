@@ -3,7 +3,7 @@ package FileSystem.Buffer;
 import FileSystem.Block.Default.BlockIndexIdWithManagerId;
 import FileSystem.Block.Default.DefaultBlockData;
 import FileSystem.Block.Default.DefaultBlockMeta;
-import FileSystem.Exception.BlockIndexIdWithManagerIdFormatException;
+import FileSystem.Exception.BlockException.BlockIndexIdWithManagerIdFormatException;
 import FileSystem.Exception.BufferException.WriteBufferToBlockException;
 import FileSystem.ReaderWriter.AtomicBlockWriter;
 import FileSystem.Util.EncryptUtil;

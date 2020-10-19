@@ -1,6 +1,6 @@
 package FileSystem.Manager.Default;
 
-import FileSystem.Exception.FileExistedException;
+import FileSystem.Exception.FileException.FileExistedException;
 import FileSystem.Exception.InitiationFailedException;
 import FileSystem.File.Default.DefaultFile;
 import FileSystem.File.File;
