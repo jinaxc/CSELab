@@ -49,18 +49,18 @@ public class Application {
         initializeFileController();
         bufferManager = new BlockBufferManager(10);
         commandFormatHelpers = new HashMap<>();
-        commandFormatHelpers.put("newFile","new-file||newFile file_id");
-        commandFormatHelpers.put("read","read file_id length");
-        commandFormatHelpers.put("write","write file_id data");
-        commandFormatHelpers.put("pos","pos file_id");
-        commandFormatHelpers.put("move","move file_id index cursor_place(0 denotes the current cursor,1 denotes head of the file,2 denote tail of the file)");
-        commandFormatHelpers.put("size","size file_id");
-        commandFormatHelpers.put("close","close file_id");
-        commandFormatHelpers.put("setSize","set-size||setSize file_id new_size");
-        commandFormatHelpers.put("smartCat","smart-cat||smartCat file_id");
-        commandFormatHelpers.put("smartHex","smart-hex||smartHex block_id");
-        commandFormatHelpers.put("smartWrite","smart-write||smartWrite file_id index(from the head of the file) data");
-        commandFormatHelpers.put("smartCopy","smart-copy||smartCopy file_id_from file_id_to");
+        commandFormatHelpers.put("newFile","new-file||newFile file_id\n\texample : new-file 3");
+        commandFormatHelpers.put("read","read file_id length\n\texample : read fm0-f1 5");
+        commandFormatHelpers.put("write","write file_id data\n\texample : write fm0-f1 hello");
+        commandFormatHelpers.put("pos","pos file_id\n\texample : pos fm0-f1");
+        commandFormatHelpers.put("move","move file_id index cursor_place(0 denotes the current cursor,1 denotes head of the file,2 denote tail of the file)\n\texample : move fm0-f1 0 1");
+        commandFormatHelpers.put("size","size file_id\n\texample : size fm0-f1");
+        commandFormatHelpers.put("close","close file_id\n\texample : close fm0-f1");
+        commandFormatHelpers.put("setSize","set-size||setSize file_id new_size\n\texample : set-size fm0-f1 1");
+        commandFormatHelpers.put("smartCat","smart-cat||smartCat file_id\n\texample : smart-cat fm0-f1");
+        commandFormatHelpers.put("smartHex","smart-hex||smartHex block_id\n\texample : smart-hex bm0-b1");
+        commandFormatHelpers.put("smartWrite","smart-write||smartWrite file_id index(from the head of the file) data\n\texample : smart-write fm0-f1 4 hello");
+        commandFormatHelpers.put("smartCopy","smart-copy||smartCopy file_id_from file_id_to\n\texample : smart-copy fm0-f1 fm0-f2");
     }
 
     private static void initializeFileController() throws InitiationFailedException {
@@ -181,6 +181,10 @@ public class Application {
                 errorOutput("invalid fileIdFormat -> " + e.getMessage());
                 printCommandExample("smartCopy");
                 return;
+            } catch (FileExistedException e) {
+                errorOutput("file existed" + e.getMessage());
+                printCommandExample("smartCopy");
+                return;
             }
             if (fileFrom == null) {
                 errorOutput("file not exist");
@@ -226,16 +230,25 @@ public class Application {
                 errorOutput("file not exist");
             } else {
                 try {
-                    UserUtils.smartWrite(file, index, commandAndArgs[3]);
+                    StringBuilder toWrite = new StringBuilder();
+                    for(int i = 3;i < commandAndArgs.length;i++){
+                        toWrite.append(commandAndArgs[i]);
+                        if(i != commandAndArgs.length - 1){
+                            toWrite.append(" ");
+                        }
+                    }
+                    UserUtils.smartWrite(file, index, toWrite.toString());
                 } catch (IllegalCursorException e) {
                     errorOutput("illegal cursor place -> " + e.getMessage());
+                    printCommandExample("smartWrite");
                 } catch (AllocateNewBlockFailedException e) {
                     errorOutput("block allocate failed -> " + e.getMessage());
+                    printCommandExample("smartWrite");
                 } catch (IOException e) {
                     errorOutput("IO failed -> " + e.getMessage());
+                    printCommandExample("smartWrite");
                 } catch (CorruptedFileException e) {
                     errorOutput("file corrupted -> " + e.getMessage());
-                }finally {
                     printCommandExample("smartWrite");
                 }
             }
@@ -314,7 +327,14 @@ public class Application {
             printCommandExample("newFile");
             return;
         }
-        File file = fileManagerController.newFile(new FileId(id));
+        File file = null;
+        try {
+            file = fileManagerController.newFile(new FileId(id));
+        } catch (FileExistedException e) {
+            errorOutput("file already exited ->" + e.getMessage());
+            printCommandExample("newFile");
+            return;
+        }
         if(file == null){
             errorOutput("create file fail");
             printCommandExample("newFile");
@@ -350,6 +370,7 @@ public class Application {
         } else {
             try {
                 byte[] bytes = file.read((int) length);
+                System.out.println(new String(bytes));
                 if(bytes.length < length){
                     System.out.println("not enough bytes left");
                 }
@@ -385,6 +406,9 @@ public class Application {
             StringBuilder toWrite = new StringBuilder();
             for(int i = 2;i < commandAndArgs.length;i++){
                 toWrite.append(commandAndArgs[i]);
+                if(i != commandAndArgs.length - 1){
+                    toWrite.append(" ");
+                }
             }
             try {
                 file.write(toWrite.toString().getBytes());
@@ -446,6 +470,12 @@ public class Application {
             printCommandExample("move");
         } catch (IllegalCursorException e) {
             errorOutput("illegal position -> " + e.getMessage());
+            printCommandExample("move");
+        } catch (CorruptedFileException e) {
+            errorOutput("file corrupted -> " + e.getMessage());
+            printCommandExample("move");
+        } catch (IOException e) {
+            errorOutput("read failed -> " + e.getMessage());
             printCommandExample("move");
         }
     }

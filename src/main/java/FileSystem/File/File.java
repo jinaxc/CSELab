@@ -24,7 +24,7 @@ public interface File {
 //        return move(0, MOVE_CURR);
 //    }
     long pos();
-    long move(long offset, int where) throws IllegalCursorException;
+    long move(long offset, int where) throws IllegalCursorException, IOException, CorruptedFileException;
     //使⽤buffer的同学需要实现
     void close();
     long size() throws IOException,  CorruptedFileException;

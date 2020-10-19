@@ -271,13 +271,25 @@ public class DefaultFile implements File {
     }
 
     @Override
-    public long move(long offset, int where) throws IllegalCursorException {
+    public long move(long offset, int where) throws IllegalCursorException, IOException, CorruptedFileException {
         switch (where){
             case MOVE_CURR:
-            case MOVE_TAIL:
+                if(cur + offset > size() || cur + offset < 0){
+                    throw new IllegalCursorException("illegal cursor place");
+                }
                 cur = cur + offset;
                 break;
+            case MOVE_TAIL:
+                long pos = size() + offset;
+                if(offset > 0 || pos < 0){
+                    throw new IllegalCursorException("illegal cursor place");
+                }
+                cur = pos;
+                break;
             case MOVE_HEAD:
+                if(offset > size() || offset < 0){
+                    throw new IllegalCursorException("illegal cursor place");
+                }
                 cur = offset;
                 break;
             default:
@@ -338,8 +350,9 @@ public class DefaultFile implements File {
             cur = curTemp;
         }else {
             if (newSize != size) {
-    //            long curTemp = cur;
-    //            cur = newSize;
+                if(cur > newSize){
+                    cur = newSize;
+                }
                 FileMetaData fileMetaData = null;
                 try {
                     fileMetaData = ReaderWriterUtil.readFileMetaData(fileMetaDataPath);

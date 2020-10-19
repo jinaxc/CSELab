@@ -1,5 +1,6 @@
 package FileSystem.Manager.Default;
 
+import FileSystem.Exception.FileExistedException;
 import FileSystem.Exception.InitiationFailedException;
 import FileSystem.File.Default.DefaultFile;
 import FileSystem.File.File;
@@ -53,10 +54,11 @@ public class DefaultFileManager implements FileManager {
      * @return null if newFile failed
      */
     @Override
-    public File newFile(Id fileId) {
+    public File newFile(Id fileId) throws FileExistedException {
         //TODO maybe should throw an exception
         if(files.get(fileId.getId()) != null){
-            return null;
+            LOGGER.warn("file {} existed",fileId.getIdString());
+            throw new FileExistedException("file already existed");
         }
         String pathPrefix = Properties.FILE_PATH + id.getIdString() + "/" + fileId.getIdString();
         File file;
